@@ -71,9 +71,56 @@ def read_shapes(path: str) -> list[Shape]:
                 print(f"{path}:{num}: {e}")
     return shapes
 
-
-if __name__ == "__main__":
-    shapes = read_shapes("shapes.txt")
+def op_print(shapes: list[Shape]) -> None:
     for s in shapes:
         print(s)
-    print(f"Всего: {len(shapes)}")
+
+
+def op_count(shapes: list[Shape]) -> None:
+    print(len(shapes))
+
+
+
+OPERATIONS = {
+    "print": op_print,
+    "count": op_count,
+}
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="shapes",
+        description="читает файл с фигурами и выполняет операцию над списком.",
+    )
+    parser.add_argument(
+        "-f", "--file",
+        required=True,
+        metavar="PATH",
+        help="путь к файлу",
+    )
+    parser.add_argument(
+        "-o", "--oper",
+        required=True,
+        choices=sorted(OPERATIONS),
+        help="операция над списком фигур: print or count",
+    )
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+
+    try:
+        shapes = read_shapes(args.file)
+    except FileNotFoundError:
+        print(f"Файл не найден: {args.file}", file=sys.stderr)
+        return 1
+    except OSError as e:
+        print(f"Ошибка чтения {args.file}: {e}", file=sys.stderr)
+        return 1
+
+    OPERATIONS[args.oper](shapes)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
