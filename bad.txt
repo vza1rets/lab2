@@ -1,0 +1,5 @@
+Point(3.4, 5.5)
+Point(3.4, 5.5
+Point(abc, 5)
+Foo(1, 2)
+Circle(Point(0, 0), 4)
